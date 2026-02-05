@@ -20,6 +20,7 @@ CREATE TABLE public.users (
   stripe_account_id TEXT,
   stripe_customer_id TEXT,
   push_token TEXT,
+  
   avatar_url TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()

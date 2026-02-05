@@ -3,197 +3,103 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  Alert,
+  Pressable,
 } from 'react-native';
-import { COLORS, SIZES, FONTS } from '../../constants/theme';
-import { useAuth } from '../../hooks/useAuth';
-import Button from '../../components/Button';
 
-const ROLES = [
-  {
-    key: 'sender',
-    icon: '📦',
-    title: 'Send Packages',
-    description:
-      'Request deliveries and have couriers pick up and deliver your packages across town.',
-  },
-  {
-    key: 'courier',
-    icon: '🚗',
-    title: 'Deliver Packages',
-    description:
-      'Earn money by picking up and delivering packages for senders in your area.',
-  },
-  {
-    key: 'both',
-    icon: '🔄',
-    title: 'Both',
-    description:
-      'Send packages when you need to and deliver packages when you want to earn.',
-  },
-];
+const RoleSelectionScreen = () => {
+  const [step, setStep] = useState(1);
+  const [selectedRole, setSelectedRole] = useState('');
 
-const RoleSelectionScreen = ({ navigation }) => {
-  const { updateProfile } = useAuth();
-
-  const [selectedRole, setSelectedRole] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  const handleContinue = async () => {
-    if (!selectedRole) {
-      Alert.alert('Error', 'Please select how you want to use P2P Delivery.');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const { error } = await updateProfile({ role: selectedRole });
-      if (error) {
-        Alert.alert('Error', error.message);
-      } else {
-        if (selectedRole === 'courier' || selectedRole === 'both') {
-          navigation.navigate('CourierVerification');
-        }
-        // If sender, navigation is handled by the navigator
-        // (profile now has a role, so the auth navigator will redirect)
-      }
-    } catch (err) {
-      Alert.alert('Error', 'An unexpected error occurred. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  if (step === 2) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Success!</Text>
+        <Text style={styles.subtitle}>You selected: {selectedRole}</Text>
+      </View>
+    );
+  }
 
   return (
-    <ScrollView
-      style={styles.flex}
-      contentContainerStyle={styles.scrollContent}
-    >
-      <View style={styles.container}>
-        <View style={styles.headerSection}>
-          <Text style={styles.title}>How will you use P2P Delivery?</Text>
-          <Text style={styles.subtitle}>
-            You can always change this later in your settings
-          </Text>
-        </View>
+    <View style={styles.container}>
+      <Text style={styles.title}>Select Your Role</Text>
 
-        <View style={styles.cardsSection}>
-          {ROLES.map((role) => {
-            const isSelected = selectedRole === role.key;
-            return (
-              <TouchableOpacity
-                key={role.key}
-                activeOpacity={0.7}
-                onPress={() => setSelectedRole(role.key)}
-                style={[
-                  styles.card,
-                  isSelected && styles.cardSelected,
-                ]}
-              >
-                <Text style={styles.cardIcon}>{role.icon}</Text>
-                <Text
-                  style={[
-                    styles.cardTitle,
-                    isSelected && styles.cardTitleSelected,
-                  ]}
-                >
-                  {role.title}
-                </Text>
-                <Text style={styles.cardDescription}>{role.description}</Text>
-                {isSelected && <View style={styles.selectedIndicator} />}
-              </TouchableOpacity>
-            );
-          })}
-        </View>
+      <Pressable
+        style={[styles.card, selectedRole === 'sender' && styles.cardSelected]}
+        onPress={() => setSelectedRole('sender')}
+      >
+        <Text style={styles.cardText}>📦 Send Packages</Text>
+      </Pressable>
 
-        <Button
-          title="Continue"
-          onPress={handleContinue}
-          loading={loading}
-          disabled={loading || !selectedRole}
-          style={styles.continueButton}
-        />
-      </View>
-    </ScrollView>
+      <Pressable
+        style={[styles.card, selectedRole === 'courier' && styles.cardSelected]}
+        onPress={() => setSelectedRole('courier')}
+      >
+        <Text style={styles.cardText}>🚗 Deliver Packages</Text>
+      </Pressable>
+
+      <Pressable
+        style={styles.button}
+        onPress={() => {
+          if (selectedRole) {
+            setStep(2);
+          }
+        }}
+      >
+        <Text style={styles.buttonText}>Continue</Text>
+      </Pressable>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  flex: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
   container: {
     flex: 1,
-    paddingHorizontal: SIZES.lg,
-    paddingVertical: SIZES.xxl,
+    backgroundColor: '#F9FAFB',
+    padding: 24,
     justifyContent: 'center',
   },
-  headerSection: {
-    marginBottom: SIZES.xl,
-  },
   title: {
-    ...FONTS.h1,
-    color: COLORS.text,
-    marginBottom: SIZES.sm,
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 24,
+    textAlign: 'center',
   },
   subtitle: {
-    ...FONTS.body,
-    color: COLORS.textSecondary,
-  },
-  cardsSection: {
-    marginBottom: SIZES.xl,
+    fontSize: 18,
+    color: '#4F46E5',
+    textAlign: 'center',
   },
   card: {
-    backgroundColor: COLORS.surface,
-    borderRadius: SIZES.radiusLg,
-    padding: SIZES.lg,
-    marginBottom: SIZES.md,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 12,
     borderWidth: 2,
-    borderColor: COLORS.border,
-    position: 'relative',
-    overflow: 'hidden',
+    borderColor: '#E5E7EB',
   },
   cardSelected: {
-    borderColor: COLORS.primary,
+    borderColor: '#4F46E5',
     backgroundColor: '#EEF2FF',
   },
-  cardIcon: {
-    fontSize: 32,
-    marginBottom: SIZES.sm,
+  cardText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#111827',
+    textAlign: 'center',
   },
-  cardTitle: {
-    ...FONTS.h3,
-    color: COLORS.text,
-    marginBottom: SIZES.xs,
+  button: {
+    height: 52,
+    backgroundColor: '#4F46E5',
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 20,
   },
-  cardTitleSelected: {
-    color: COLORS.primary,
-  },
-  cardDescription: {
-    ...FONTS.caption,
-    color: COLORS.textSecondary,
-    lineHeight: 20,
-  },
-  selectedIndicator: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    width: 0,
-    height: 0,
-    borderStyle: 'solid',
-    borderTopWidth: 32,
-    borderLeftWidth: 32,
-    borderTopColor: COLORS.primary,
-    borderLeftColor: 'transparent',
-  },
-  continueButton: {
-    marginTop: SIZES.sm,
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
 

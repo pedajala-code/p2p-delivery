@@ -1,9 +1,10 @@
 import React from 'react';
 import {
-  TouchableOpacity,
+  Pressable,
   Text,
   ActivityIndicator,
   StyleSheet,
+  Platform,
 } from 'react-native';
 import { COLORS, SIZES, FONTS } from '../constants/theme';
 
@@ -24,13 +25,6 @@ const Button = ({
     danger: COLORS.danger,
   };
 
-  const pressedBackgrounds = {
-    primary: COLORS.primaryDark,
-    secondary: COLORS.secondaryDark,
-    outline: COLORS.border,
-    danger: '#DC2626',
-  };
-
   const textColors = {
     primary: '#FFFFFF',
     secondary: '#FFFFFF',
@@ -46,17 +40,18 @@ const Button = ({
   };
 
   return (
-    <TouchableOpacity
+    <Pressable
       onPress={onPress}
       disabled={isDisabled}
-      activeOpacity={0.8}
-      style={[
+      style={({ pressed }) => [
         styles.button,
         {
           backgroundColor: isDisabled
             ? COLORS.disabled
             : backgroundColors[variant],
           borderColor: isDisabled ? COLORS.disabled : borderColors[variant],
+          opacity: pressed ? 0.8 : 1,
+          cursor: Platform.OS === 'web' ? (isDisabled ? 'not-allowed' : 'pointer') : undefined,
         },
         variant === 'outline' && styles.outlineBorder,
         style,
@@ -79,7 +74,7 @@ const Button = ({
           {title}
         </Text>
       )}
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 

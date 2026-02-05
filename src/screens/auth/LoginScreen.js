@@ -2,147 +2,145 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
+  TextInput,
   StyleSheet,
-  TouchableOpacity,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Alert,
+  Pressable,
 } from 'react-native';
-import { COLORS, SIZES, FONTS } from '../../constants/theme';
 import { useAuth } from '../../hooks/useAuth';
-import Button from '../../components/Button';
-import Input from '../../components/Input';
 
 const LoginScreen = ({ navigation }) => {
   const { signIn } = useAuth();
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
 
   const handleLogin = async () => {
+    setMessage('Button clicked!');
+
     if (!email.trim() || !password.trim()) {
-      Alert.alert('Error', 'Please fill in all fields.');
+      setMessage('Please fill in all fields');
       return;
     }
 
     setLoading(true);
+    setMessage('Signing in...');
+
     try {
       const { error } = await signIn(email.trim(), password);
       if (error) {
-        Alert.alert('Login Failed', error.message);
+        setMessage('Error: ' + error.message);
+      } else {
+        setMessage('Success! Redirecting...');
+        navigation.navigate('RoleSelection');
       }
     } catch (err) {
-      Alert.alert('Error', 'An unexpected error occurred. Please try again.');
+      setMessage('Error: ' + err.message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.flex}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
+    <View style={styles.container}>
+      <Text style={styles.title}>Welcome Back</Text>
+      <Text style={styles.subtitle}>Sign in to P2P Delivery</Text>
+
+      <Text style={styles.label}>Email</Text>
+      <TextInput
+        style={styles.input}
+        value={email}
+        onChangeText={setEmail}
+        placeholder="Enter your email"
+        autoCapitalize="none"
+        keyboardType="email-address"
+      />
+
+      <Text style={styles.label}>Password</Text>
+      <TextInput
+        style={styles.input}
+        value={password}
+        onChangeText={setPassword}
+        placeholder="Enter your password"
+        secureTextEntry
+      />
+
+      {message ? <Text style={styles.message}>{message}</Text> : null}
+
+      <Pressable
+        style={styles.button}
+        onPress={handleLogin}
+        disabled={loading}
       >
-        <View style={styles.container}>
-          <View style={styles.headerSection}>
-            <Text style={styles.title}>Welcome Back</Text>
-            <Text style={styles.subtitle}>
-              Sign in to your P2P Delivery account
-            </Text>
-          </View>
+        <Text style={styles.buttonText}>
+          {loading ? 'Signing in...' : 'Sign In'}
+        </Text>
+      </Pressable>
 
-          <View style={styles.formSection}>
-            <Input
-              label="Email"
-              value={email}
-              onChangeText={setEmail}
-              placeholder="Enter your email"
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-
-            <Input
-              label="Password"
-              value={password}
-              onChangeText={setPassword}
-              placeholder="Enter your password"
-              secureTextEntry
-              autoCapitalize="none"
-            />
-
-            <Button
-              title="Sign In"
-              onPress={handleLogin}
-              loading={loading}
-              disabled={loading}
-              style={styles.loginButton}
-            />
-          </View>
-
-          <View style={styles.footerSection}>
-            <Text style={styles.footerText}>Don't have an account? </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-              <Text style={styles.footerLink}>Sign Up</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+      <Pressable onPress={() => navigation.navigate('Register')}>
+        <Text style={styles.link}>Don't have an account? Sign Up</Text>
+      </Pressable>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  flex: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
-  },
   container: {
     flex: 1,
+    backgroundColor: '#F9FAFB',
+    padding: 24,
     justifyContent: 'center',
-    paddingHorizontal: SIZES.lg,
-    paddingVertical: SIZES.xxl,
-  },
-  headerSection: {
-    marginBottom: SIZES.xl,
   },
   title: {
-    ...FONTS.h1,
-    color: COLORS.text,
-    marginBottom: SIZES.sm,
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 8,
   },
   subtitle: {
-    ...FONTS.body,
-    color: COLORS.textSecondary,
+    fontSize: 16,
+    color: '#6B7280',
+    marginBottom: 32,
   },
-  formSection: {
-    marginBottom: SIZES.lg,
-  },
-  loginButton: {
-    marginTop: SIZES.sm,
-  },
-  footerSection: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  footerText: {
-    ...FONTS.caption,
-    color: COLORS.textSecondary,
-  },
-  footerLink: {
-    ...FONTS.caption,
+  label: {
+    fontSize: 14,
     fontWeight: '600',
-    color: COLORS.primary,
+    color: '#111827',
+    marginBottom: 4,
+  },
+  input: {
+    height: 50,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    fontSize: 16,
+    backgroundColor: '#FFFFFF',
+    marginBottom: 16,
+  },
+  message: {
+    fontSize: 14,
+    color: '#4F46E5',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  button: {
+    height: 52,
+    backgroundColor: '#4F46E5',
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  link: {
+    fontSize: 14,
+    color: '#4F46E5',
+    textAlign: 'center',
   },
 });
 

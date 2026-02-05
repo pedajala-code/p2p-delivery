@@ -7,6 +7,7 @@ export function AuthProvider({ children }) {
   const [session, setSession] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [updateCount, setUpdateCount] = useState(0);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session: s } }) => {
@@ -104,7 +105,11 @@ export function AuthProvider({ children }) {
       .select()
       .single();
 
-    if (!error) setProfile(data);
+    if (!error) {
+      console.log('Setting profile to:', data);
+      setProfile({ ...data });
+      setUpdateCount(c => c + 1);
+    }
     return { data, error };
   }
 
@@ -126,6 +131,7 @@ export function AuthProvider({ children }) {
         updateProfile,
         refreshProfile,
         user: session?.user ?? null,
+        updateCount,
       }}
     >
       {children}

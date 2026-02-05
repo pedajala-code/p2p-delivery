@@ -1,14 +1,19 @@
 import { NavigationContainer } from '@react-navigation/native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useAuth } from '../hooks/useAuth';
 import AuthNavigator from './AuthNavigator';
 import MainNavigator from './MainNavigator';
-import LoadingScreen from '../components/LoadingScreen';
 
 export default function RootNavigator() {
-  const { session, profile, loading } = useAuth();
+  const { session, profile, loading, updateCount } = useAuth();
+  console.log('RootNavigator render:', { session: !!session, profile, updateCount });
 
   if (loading) {
-    return <LoadingScreen />;
+    return (
+      <View style={styles.container}>
+        <Text style={styles.text}>Loading...</Text>
+      </View>
+    );
   }
 
   // Not logged in → auth flow
@@ -20,8 +25,7 @@ export default function RootNavigator() {
     );
   }
 
-  // Logged in but no profile yet → show auth flow for onboarding
-  // (PhoneVerification, RoleSelection, CourierVerification)
+  // Logged in but no profile/role yet → auth flow for onboarding
   if (!profile || !profile.role) {
     return (
       <NavigationContainer>
@@ -37,3 +41,17 @@ export default function RootNavigator() {
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F9FAFB',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  text: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#111827',
+  },
+});

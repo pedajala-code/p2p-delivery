@@ -51,14 +51,30 @@ export const mockAuth = {
     currentUser = user;
     sessionActive = true;
     this.currentSession = { user };
+    seedDemoData(id);
     return { data: { user, session: { user } }, error: null };
   },
 
   async signInWithPassword({ email, password }) {
-    // Find user by email or create one
+    // Find user by email or auto-create for demo purposes
     let user = Object.values(users).find((u) => u.email === email);
     if (!user) {
-      return { data: null, error: { message: 'Invalid email or password' } };
+      // Auto-create user for easy testing
+      const id = uuid();
+      user = {
+        id,
+        email,
+        full_name: null,
+        phone: null,
+        role: null,
+        courier_verified: false,
+        stripe_account_id: null,
+        push_token: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      users[id] = user;
+      seedDemoData(id);
     }
     currentUser = { id: user.id, email: user.email };
     sessionActive = true;
