@@ -1,0 +1,80 @@
+{
+  "expo": {
+    "name": "P2P Delivery",
+    "slug": "p2p-delivery",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#4F46E5"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.p2pdelivery.app",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "We need your location to show nearby deliveries and track courier positions.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "We need your location to provide real-time tracking while delivering packages.",
+        "NSCameraUsageDescription": "We need camera access for identity verification and delivery proof photos.",
+        "NSPhotoLibraryUsageDescription": "We need photo library access to upload your ID documents."
+      },
+      "config": {
+        "googleMapsApiKey": "YOUR_GOOGLE_MAPS_API_KEY"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#4F46E5"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.p2pdelivery.app",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "CAMERA"
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "YOUR_GOOGLE_MAPS_API_KEY"
+        }
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-secure-store",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow P2P Delivery to use your location for real-time tracking."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow P2P Delivery to access your photos for ID verification.",
+          "cameraPermission": "Allow P2P Delivery to use your camera for selfie verification and delivery proofs."
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow P2P Delivery to access your camera."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#4F46E5"
+        }
+      ]
+    ]
+  }
+}
